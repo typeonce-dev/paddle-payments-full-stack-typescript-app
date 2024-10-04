@@ -6,3 +6,7 @@ pnpm dlx create-turbo@latest
 cd apps
 npx degit remix-run/react-router/templates/basic#dev client 
 ```
+
+```sh
+pnpm add @paddle/paddle-js xstate @xstate/react effect @effect/schema
+```
