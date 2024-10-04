@@ -1,5 +1,6 @@
 import { initializePaddle, type PaddleEventData } from "@paddle/paddle-js";
 import { Config, Context, Data, Effect, Layer } from "effect";
+import { PADDLE_CONTAINER_CLASS } from "~/constants";
 
 class ErrorPaddle extends Data.TaggedError("PaddleError")<{ cause: unknown }> {}
 
@@ -20,7 +21,7 @@ const make =
           settings: {
             displayMode: "inline",
             frameInitialHeight: 450,
-            frameTarget: "checkout-container",
+            frameTarget: PADDLE_CONTAINER_CLASS,
             frameStyle:
               "width: 100%; min-width: 312px; background-color: transparent; border: none;",
             locale: "en",
