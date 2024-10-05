@@ -15,7 +15,7 @@ const make =
       initializePaddle({
         eventCallback,
         token: clientToken,
-        environment: "production",
+        environment: "sandbox",
         debug: true,
         checkout: {
           settings: {

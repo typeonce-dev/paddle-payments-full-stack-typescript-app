@@ -26,7 +26,8 @@ export const machine = setup({
     input: {} as Input,
     events: {} as
       | Readonly<{ type: "xstate.init"; input: Input }>
-      | Readonly<{ type: "checkout.completed" }>,
+      | Readonly<{ type: "checkout.completed" }>
+      | Readonly<{ type: "checkout.created" }>,
   },
   actors: { paddleInitActor },
 }).createMachine({
@@ -41,17 +42,31 @@ export const machine = setup({
           return {
             priceId: event.input.priceId,
             eventCallback: (event) => {
-              if (event.name === CheckoutEventNames.CHECKOUT_COMPLETED) {
+              if (event.name === CheckoutEventNames.CHECKOUT_CUSTOMER_CREATED) {
+                self.send({ type: "checkout.created" });
+              } else if (event.name === CheckoutEventNames.CHECKOUT_COMPLETED) {
                 self.send({ type: "checkout.completed" });
               }
             },
           };
         },
         onError: { target: "Error" },
-        onDone: { target: "Open" },
+        onDone: { target: "Customer" },
       },
     },
-    Open: {},
+    Customer: {
+      on: {
+        "checkout.created": { target: "Checkout" },
+      },
+    },
+    Checkout: {
+      on: {
+        "checkout.completed": { target: "Success" },
+      },
+    },
     Error: {},
+    Success: {
+      type: "final",
+    },
   },
 });
