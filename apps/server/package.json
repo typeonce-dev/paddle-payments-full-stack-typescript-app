@@ -1,0 +1,21 @@
+{
+  "name": "@app/server",
+  "version": "0.0.0",
+  "author": "Typeonce",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsx src/main.ts"
+  },
+  "dependencies": {
+    "@effect/platform": "^0.66.2",
+    "@effect/platform-node": "^0.61.3",
+    "@effect/schema": "^0.74.1",
+    "@paddle/paddle-node-sdk": "^1.7.0",
+    "dotenv": "^16.4.5",
+    "effect": "^3.8.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.7.4",
+    "tsx": "^4.19.1"
+  }
+}
