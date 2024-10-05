@@ -4,7 +4,8 @@
   "author": "Typeonce",
   "license": "MIT",
   "scripts": {
-    "dev": "tsx src/main.ts"
+    "dev": "tsx src/main.ts",
+    "typecheck": "tsc"
   },
   "dependencies": {
     "@effect/platform": "^0.66.2",
