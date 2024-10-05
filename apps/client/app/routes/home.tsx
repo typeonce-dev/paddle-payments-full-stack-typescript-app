@@ -1,13 +1,26 @@
 import { useMachine } from "@xstate/react";
+import { Config, Effect } from "effect";
 import { Breadcrumb, Breadcrumbs } from "~/components/Breadcrumbs";
 import { PADDLE_CONTAINER_CLASS } from "~/constants";
 import { machine } from "~/machines/paddle-machine";
-import { PADDLE_PRICE_ID } from "~/services/_env";
+import type * as Route from "./+types.home";
+
+export async function loader() {
+  return Effect.runPromise(
+    Config.all({
+      paddleClientToken: Config.string("PADDLE_CLIENT_TOKEN"),
+      paddlePriceId: Config.string("PADDLE_PRICE_ID"),
+    })
+  );
+}
 
 // Testing cards: https://developer.paddle.com/concepts/payment-methods/credit-debit-card#test-payment-method
-export default function Index() {
-  const [snapshot, send, actor] = useMachine(machine, {
-    input: { priceId: PADDLE_PRICE_ID },
+export default function Index({ loaderData }: Route.ComponentProps) {
+  const [snapshot] = useMachine(machine, {
+    input: {
+      priceId: loaderData.paddlePriceId,
+      clientToken: loaderData.paddleClientToken,
+    },
   });
   return (
     <main className="mx-auto max-w-4xl my-12">

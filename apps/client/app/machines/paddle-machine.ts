@@ -4,18 +4,22 @@ import { assertEvent, fromPromise, setup } from "xstate";
 import { Paddle } from "~/services/paddle";
 import { RuntimeClient } from "~/services/runtime-client";
 
-type Input = { priceId: string };
+type Input = { priceId: string; clientToken: string };
 
 const paddleInitActor = fromPromise(
   ({
-    input: { eventCallback, priceId },
+    input: { eventCallback, priceId, clientToken },
   }: {
-    input: { eventCallback: (event: PaddleEventData) => void; priceId: string };
+    input: {
+      eventCallback: (event: PaddleEventData) => void;
+      priceId: string;
+      clientToken: string;
+    };
   }) =>
     RuntimeClient.runPromise(
       Effect.gen(function* () {
         const _ = yield* Paddle;
-        const paddle = yield* _(eventCallback);
+        const paddle = yield* _({ eventCallback, clientToken });
         paddle.Checkout.open({ items: [{ priceId, quantity: 1 }] });
       })
     )
@@ -41,6 +45,7 @@ export const machine = setup({
           assertEvent(event, "xstate.init");
           return {
             priceId: event.input.priceId,
+            clientToken: event.input.clientToken,
             eventCallback: (event) => {
               if (event.name === CheckoutEventNames.CHECKOUT_CUSTOMER_CREATED) {
                 self.send({ type: "checkout.created" });
