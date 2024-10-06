@@ -1,7 +1,8 @@
+import { MainApi } from "@app/api-client";
 import { HttpApiBuilder } from "@effect/platform";
 import { Config, Layer } from "effect";
 import { Paddle } from "./paddle";
-import { MainApi, PaddleApiLive } from "./paddle-api";
+import { PaddleApiLive } from "./paddle-api";
 
 const PaddleConfig = Config.all({
   apiKey: Config.redacted("PADDLE_API_KEY"),

@@ -1,7 +1,7 @@
+import { ProductId } from "@app/api-client/schemas";
 import { Schema } from "@effect/schema";
 import * as _Paddle from "@paddle/paddle-node-sdk";
 import { Config, Context, Effect, Layer, Redacted } from "effect";
-import { ProductId } from "./schemas/paddle";
 
 export class ErrorPaddleQuery extends Schema.TaggedError<ErrorPaddleQuery>()(
   "ErrorPaddleQuery",

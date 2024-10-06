@@ -1,0 +1,18 @@
+{
+  "name": "@app/api-client",
+  "version": "0.0.0",
+  "author": "Typeonce",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/api.ts",
+    "./schemas": "./src/schemas/paddle.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@effect/platform": "^0.66.2",
+    "@effect/schema": "^0.74.1",
+    "effect": "^3.8.4"
+  }
+}

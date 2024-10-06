@@ -20,6 +20,12 @@ importers:
 
   apps/client:
     dependencies:
+      '@app/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
+      '@effect/platform':
+        specifier: ^0.66.2
+        version: 0.66.2(@effect/schema@0.74.1)(effect@3.8.4)
       '@effect/schema':
         specifier: ^0.74.1
         version: 0.74.1(effect@3.8.4)
@@ -87,6 +93,9 @@ importers:
 
   apps/server:
     dependencies:
+      '@app/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
       '@effect/platform':
         specifier: ^0.66.2
         version: 0.66.2(@effect/schema@0.74.1)(effect@3.8.4)
@@ -112,6 +121,18 @@ importers:
       tsx:
         specifier: ^4.19.1
         version: 4.19.1
+
+  packages/api-client:
+    dependencies:
+      '@effect/platform':
+        specifier: ^0.66.2
+        version: 0.66.2(@effect/schema@0.74.1)(effect@3.8.4)
+      '@effect/schema':
+        specifier: ^0.74.1
+        version: 0.74.1(effect@3.8.4)
+      effect:
+        specifier: ^3.8.4
+        version: 3.8.4
 
 packages:
 
