@@ -5,6 +5,7 @@ import { MainApi, PaddleApiLive } from "./paddle-api";
 
 const PaddleConfig = Config.all({
   apiKey: Config.redacted("PADDLE_API_KEY"),
+  productId: Config.redacted("PADDLE_PRODUCT_ID"),
 });
 
 const PaddleLive = Paddle.Live(PaddleConfig);

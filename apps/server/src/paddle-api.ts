@@ -6,7 +6,8 @@ import {
 } from "@effect/platform";
 import { Schema } from "@effect/schema";
 import { Config, Effect, Redacted } from "effect";
-import { Paddle } from "./paddle";
+import { ErrorPaddleQuery, Paddle } from "./paddle";
+import { PaddleProduct } from "./schemas/paddle";
 
 class ErrorMissingWebhookSecret extends Schema.TaggedError<ErrorMissingWebhookSecret>()(
   "ErrorMissingWebhookSecret",
@@ -15,6 +16,11 @@ class ErrorMissingWebhookSecret extends Schema.TaggedError<ErrorMissingWebhookSe
 
 class ErrorVerifySignature extends Schema.TaggedError<ErrorVerifySignature>()(
   "ErrorVerifySignature",
+  {}
+) {}
+
+class ErrorInvalidProduct extends Schema.TaggedError<ErrorInvalidProduct>()(
+  "ErrorInvalidProduct",
   {}
 ) {}
 
@@ -31,6 +37,18 @@ class PaddleApi extends HttpApiGroup.make("paddle").pipe(
         })
       )
     )
+  ),
+  HttpApiGroup.add(
+    HttpApiEndpoint.get("product", "/paddle/product/:slug").pipe(
+      HttpApiEndpoint.addError(ErrorPaddleQuery),
+      HttpApiEndpoint.addError(ErrorInvalidProduct),
+      HttpApiEndpoint.setSuccess(PaddleProduct),
+      HttpApiEndpoint.setPath(
+        Schema.Struct({
+          slug: Schema.NonEmptyString,
+        })
+      )
+    )
   )
 ) {}
 
@@ -44,7 +62,7 @@ export const PaddleApiLive = HttpApiBuilder.group(
       // https://developer.paddle.com/webhooks/signature-verification#verify-sdks
       HttpApiBuilder.handle("webhook", ({ payload, headers }) =>
         Effect.gen(function* () {
-          const paddle = yield* Paddle;
+          const { paddle } = yield* Paddle;
           const webhookSecret = yield* Config.redacted(
             "WEBHOOK_SECRET_KEY"
           ).pipe(Effect.mapError(() => new ErrorMissingWebhookSecret()));
@@ -59,6 +77,24 @@ export const PaddleApiLive = HttpApiBuilder.group(
 
           yield* Effect.log(eventData);
           return true;
+        })
+      ),
+      HttpApiBuilder.handle("product", ({ path: { slug } }) =>
+        Effect.gen(function* () {
+          const { query, productIdFromSlug } = yield* Paddle;
+          const productId = yield* productIdFromSlug(slug);
+          const rawProduct = yield* query((_) =>
+            _.products.get(productId, {
+              include: ["prices"],
+            })
+          );
+
+          yield* Effect.log(rawProduct);
+
+          return yield* Schema.decodeUnknown(PaddleProduct)(rawProduct).pipe(
+            Effect.tapError((parseError) => Effect.logError(parseError)),
+            Effect.mapError(() => new ErrorInvalidProduct())
+          );
         })
       )
     )
