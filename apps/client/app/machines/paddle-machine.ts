@@ -1,26 +1,41 @@
-import { CheckoutEventNames, type PaddleEventData } from "@paddle/paddle-js";
+import type { PaddleProduct } from "@app/api-client/schemas";
+import { CheckoutEventNames, type Paddle as _Paddle } from "@paddle/paddle-js";
 import { Effect } from "effect";
-import { assertEvent, fromPromise, setup } from "xstate";
+import { assertEvent, assign, fromPromise, setup } from "xstate";
+import { Api } from "~/services/api";
 import { Paddle } from "~/services/paddle";
 import { RuntimeClient } from "~/services/runtime-client";
 
-type Input = { priceId: string; clientToken: string };
+type Input = { slug: string; clientToken: string };
+
+const loadProductActor = fromPromise(
+  ({
+    input: { slug },
+  }: {
+    input: {
+      slug: string;
+    };
+  }) =>
+    RuntimeClient.runPromise(
+      Effect.gen(function* () {
+        const api = yield* Api;
+        return yield* api.paddle.product({ path: { slug } });
+      })
+    )
+);
 
 const paddleInitActor = fromPromise(
   ({
-    input: { eventCallback, priceId, clientToken },
+    input: { clientToken },
   }: {
     input: {
-      eventCallback: (event: PaddleEventData) => void;
-      priceId: string;
       clientToken: string;
     };
   }) =>
     RuntimeClient.runPromise(
       Effect.gen(function* () {
         const _ = yield* Paddle;
-        const paddle = yield* _({ eventCallback, clientToken });
-        paddle.Checkout.open({ items: [{ priceId, quantity: 1 }] });
+        return yield* _({ clientToken });
       })
     )
 );
@@ -28,24 +43,59 @@ const paddleInitActor = fromPromise(
 export const machine = setup({
   types: {
     input: {} as Input,
+    context: {} as {
+      paddle: _Paddle | null;
+      clientToken: string;
+      product: PaddleProduct | null;
+    },
     events: {} as
       | Readonly<{ type: "xstate.init"; input: Input }>
       | Readonly<{ type: "checkout.completed" }>
       | Readonly<{ type: "checkout.created" }>,
   },
-  actors: { paddleInitActor },
+  actors: { loadProductActor, paddleInitActor },
 }).createMachine({
   id: "paddle-machine",
-  initial: "Init",
+  context: ({ input }) => ({
+    paddle: null,
+    product: null,
+    clientToken: input.clientToken,
+  }),
+  initial: "LoadingProduct",
   states: {
+    LoadingProduct: {
+      invoke: {
+        src: "loadProductActor",
+        input: ({ event }) => {
+          assertEvent(event, "xstate.init");
+          return { slug: event.input.slug };
+        },
+        onError: { target: "Error" },
+        onDone: {
+          target: "Init",
+          actions: assign(({ event }) => ({ product: event.output })),
+        },
+      },
+    },
     Init: {
       invoke: {
         src: "paddleInitActor",
-        input: ({ self, event }) => {
-          assertEvent(event, "xstate.init");
-          return {
-            priceId: event.input.priceId,
-            clientToken: event.input.clientToken,
+        input: ({ context }) => ({ clientToken: context.clientToken }),
+        onError: { target: "Error" },
+        onDone: {
+          target: "Customer",
+          actions: assign(({ event }) => ({ paddle: event.output })),
+        },
+      },
+    },
+    Customer: {
+      always: {
+        target: "Error",
+        guard: ({ context }) => !context.product,
+      },
+      entry: [
+        ({ context, self }) =>
+          context.paddle?.Update({
             eventCallback: (event) => {
               if (event.name === CheckoutEventNames.CHECKOUT_CUSTOMER_CREATED) {
                 self.send({ type: "checkout.created" });
@@ -53,13 +103,12 @@ export const machine = setup({
                 self.send({ type: "checkout.completed" });
               }
             },
-          };
-        },
-        onError: { target: "Error" },
-        onDone: { target: "Customer" },
-      },
-    },
-    Customer: {
+          }),
+        ({ context }) =>
+          context.paddle?.Checkout.open({
+            items: [{ priceId: context.product?.prices[0].id!, quantity: 1 }],
+          }),
+      ],
       on: {
         "checkout.created": { target: "Checkout" },
       },

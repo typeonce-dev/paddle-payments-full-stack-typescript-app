@@ -7,20 +7,17 @@ import type * as Route from "./+types.home";
 
 export async function loader() {
   return Effect.runPromise(
-    Config.all({
-      paddleClientToken: Config.string("PADDLE_CLIENT_TOKEN"),
-      paddlePriceId: Config.string("PADDLE_PRICE_ID"),
-    })
+    Config.all({ paddleClientToken: Config.string("PADDLE_CLIENT_TOKEN") })
   );
 }
 
 // Testing cards: https://developer.paddle.com/concepts/payment-methods/credit-debit-card#test-payment-method
-export default function Index({ loaderData }: Route.ComponentProps) {
+export default function Index({
+  loaderData,
+  params: { slug },
+}: Route.ComponentProps) {
   const [snapshot] = useMachine(machine, {
-    input: {
-      priceId: loaderData.paddlePriceId,
-      clientToken: loaderData.paddleClientToken,
-    },
+    input: { clientToken: loaderData.paddleClientToken, slug },
   });
   return (
     <main className="mx-auto max-w-4xl my-12">
