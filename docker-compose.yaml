@@ -1,5 +1,5 @@
 # https://github.com/docker/awesome-compose/tree/master/postgresql-pgadmin
-version: "0.1"
+version: "0.2"
 name: app_docker
 
 services:
@@ -12,7 +12,7 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PW}
       - POSTGRES_DB=${POSTGRES_DB}
     ports:
-      - 54321:5432
+      - 5435:5432
 
   pgadmin:
     env_file: .env

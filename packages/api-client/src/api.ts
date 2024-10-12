@@ -17,6 +17,11 @@ export class ErrorInvalidProduct extends Schema.TaggedError<ErrorInvalidProduct>
   {}
 ) {}
 
+export class ErrorSqlQuery extends Schema.TaggedError<ErrorSqlQuery>()(
+  "ErrorSqlQuery",
+  {}
+) {}
+
 class PaddleApi extends HttpApiGroup.make("paddle").pipe(
   HttpApiGroup.add(
     HttpApiEndpoint.post("webhook", "/paddle/webhook").pipe(
@@ -43,9 +48,17 @@ class PaddleApi extends HttpApiGroup.make("paddle").pipe(
     )
   ),
   HttpApiGroup.add(
-    HttpApiEndpoint.get("product-pg", "/paddle/pg/product").pipe(
-      HttpApiEndpoint.addError(ErrorInvalidProduct),
-      HttpApiEndpoint.setSuccess(Schema.Any)
+    HttpApiEndpoint.post("product-add", "/api/product/add").pipe(
+      HttpApiEndpoint.addError(ErrorSqlQuery),
+      HttpApiEndpoint.setPayload(
+        Schema.Struct({
+          name: Schema.NonEmptyString,
+          description: Schema.NullOr(Schema.NonEmptyString),
+          imageUrl: Schema.NullOr(Schema.NonEmptyString),
+          price: Schema.Number.pipe(Schema.nonNegative()),
+        })
+      ),
+      HttpApiEndpoint.setSuccess(Schema.Number)
     )
   )
 ) {}

@@ -1,14 +1,14 @@
 import * as PgDrizzle from "@effect/sql-drizzle/Pg";
 import { PgClient } from "@effect/sql-pg";
-import { Config, Layer } from "effect";
+import { Cause, Config, Console, Layer } from "effect";
 
 const PgLive = PgClient.layer({
   password: Config.redacted("POSTGRES_PW"),
   username: Config.succeed("postgres"),
-  database: Config.succeed("app"),
+  database: Config.succeed("postgres"),
   host: Config.succeed("localhost"),
-  port: Config.succeed(5432),
-});
+  port: Config.succeed(5435),
+}).pipe(Layer.tapErrorCause((cause) => Console.log(Cause.pretty(cause))));
 
 const DrizzleLive = PgDrizzle.layer.pipe(Layer.provide(PgLive));
 

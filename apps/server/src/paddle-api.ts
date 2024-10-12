@@ -1,6 +1,7 @@
 import {
   ErrorInvalidProduct,
   ErrorMissingWebhookSecret,
+  ErrorSqlQuery,
   ErrorVerifySignature,
   MainApi,
 } from "@app/api-client";
@@ -8,7 +9,7 @@ import { PaddleProduct } from "@app/api-client/schemas";
 import { HttpApiBuilder } from "@effect/platform";
 import { Schema } from "@effect/schema";
 import { PgDrizzle } from "@effect/sql-drizzle/Pg";
-import { Config, Effect, Redacted } from "effect";
+import { Array, Config, Effect, Redacted } from "effect";
 import { Paddle } from "./paddle";
 import { productTable } from "./schema/drizzle";
 
@@ -59,17 +60,27 @@ export const PaddleApiLive = HttpApiBuilder.group(
           );
         })
       ),
-      HttpApiBuilder.handle("product-pg", () =>
+      HttpApiBuilder.handle("product-add", ({ payload }) =>
         Effect.gen(function* () {
           const db = yield* PgDrizzle;
-          const products = yield* db
-            .select()
-            .from(productTable)
-            .pipe(Effect.mapError(() => new ErrorInvalidProduct()));
+          const product = yield* db
+            .insert(productTable)
+            .values({
+              name: payload.name,
+              description: payload.description,
+              imageUrl: payload.imageUrl,
+              price: payload.price,
+            })
+            .returning()
+            .pipe(
+              Effect.flatMap(Array.head),
+              Effect.tapError((error) => Effect.logError(error)),
+              Effect.mapError(() => new ErrorSqlQuery())
+            );
 
-          yield* Effect.log(products);
+          yield* Effect.log(product);
 
-          return products;
+          return product.id;
         })
       )
     )
