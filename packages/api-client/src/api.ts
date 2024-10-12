@@ -41,6 +41,12 @@ class PaddleApi extends HttpApiGroup.make("paddle").pipe(
         })
       )
     )
+  ),
+  HttpApiGroup.add(
+    HttpApiEndpoint.get("product-pg", "/paddle/pg/product").pipe(
+      HttpApiEndpoint.addError(ErrorInvalidProduct),
+      HttpApiEndpoint.setSuccess(Schema.Any)
+    )
   )
 ) {}
 

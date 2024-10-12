@@ -4,11 +4,13 @@ import {
   ErrorVerifySignature,
   MainApi,
 } from "@app/api-client";
+import { PaddleProduct } from "@app/api-client/schemas";
 import { HttpApiBuilder } from "@effect/platform";
 import { Schema } from "@effect/schema";
+import { PgDrizzle } from "@effect/sql-drizzle/Pg";
 import { Config, Effect, Redacted } from "effect";
 import { Paddle } from "./paddle";
-import { PaddleProduct } from "@app/api-client/schemas";
+import { productTable } from "./schema/drizzle";
 
 export const PaddleApiLive = HttpApiBuilder.group(
   MainApi,
@@ -55,6 +57,19 @@ export const PaddleApiLive = HttpApiBuilder.group(
             Effect.tapError((parseError) => Effect.logError(parseError)),
             Effect.mapError(() => new ErrorInvalidProduct())
           );
+        })
+      ),
+      HttpApiBuilder.handle("product-pg", () =>
+        Effect.gen(function* () {
+          const db = yield* PgDrizzle;
+          const products = yield* db
+            .select()
+            .from(productTable)
+            .pipe(Effect.mapError(() => new ErrorInvalidProduct()));
+
+          yield* Effect.log(products);
+
+          return products;
         })
       )
     )

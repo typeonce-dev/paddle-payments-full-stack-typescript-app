@@ -14,11 +14,13 @@
     "@effect/schema": "^0.75.3",
     "@effect/sql": "^0.16.2",
     "@effect/sql-drizzle": "^0.14.2",
+    "@effect/sql-pg": "^0.16.2",
     "@paddle/paddle-node-sdk": "^1.7.0",
     "dotenv": "^16.4.5",
     "drizzle-kit": "^0.25.0",
-    "drizzle-orm": "^0.31.0",
-    "effect": "^3.9.1"
+    "drizzle-orm": "^0.34.1",
+    "effect": "^3.9.1",
+    "pg": "^8.13.0"
   },
   "devDependencies": {
     "@types/node": "^22.7.4",
