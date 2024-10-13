@@ -2,14 +2,11 @@ import { HttpApi, HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "@effect/schema";
 import { PaddleProduct } from "./schemas/paddle";
 
-export class ErrorMissingWebhookSecret extends Schema.TaggedError<ErrorMissingWebhookSecret>()(
-  "ErrorMissingWebhookSecret",
-  {}
-) {}
-
-export class ErrorVerifySignature extends Schema.TaggedError<ErrorVerifySignature>()(
-  "ErrorVerifySignature",
-  {}
+export class ErrorWebhook extends Schema.TaggedError<ErrorWebhook>()(
+  "ErrorWebhook",
+  {
+    reason: Schema.Literal("missing-secret", "verify-signature", "query-error"),
+  }
 ) {}
 
 export class ErrorInvalidProduct extends Schema.TaggedError<ErrorInvalidProduct>()(
@@ -25,8 +22,7 @@ export class ErrorSqlQuery extends Schema.TaggedError<ErrorSqlQuery>()(
 export class PaddleApi extends HttpApiGroup.make("paddle").pipe(
   HttpApiGroup.add(
     HttpApiEndpoint.post("webhook", "/paddle/webhook").pipe(
-      HttpApiEndpoint.addError(ErrorMissingWebhookSecret),
-      HttpApiEndpoint.addError(ErrorVerifySignature),
+      HttpApiEndpoint.addError(ErrorWebhook),
       HttpApiEndpoint.setSuccess(Schema.Boolean),
       HttpApiEndpoint.setPayload(Schema.String),
       HttpApiEndpoint.setHeaders(

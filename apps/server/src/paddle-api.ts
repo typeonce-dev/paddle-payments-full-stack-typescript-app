@@ -1,15 +1,11 @@
-import {
-  ErrorInvalidProduct,
-  ErrorMissingWebhookSecret,
-  ErrorVerifySignature,
-  MainApi,
-} from "@app/api-client";
+import { ErrorInvalidProduct, ErrorWebhook, MainApi } from "@app/api-client";
 import { PaddleProduct } from "@app/api-client/schemas";
 import { HttpApiBuilder } from "@effect/platform";
 import { Schema } from "@effect/schema";
 import { PgDrizzle } from "@effect/sql-drizzle/Pg";
+import { EventName } from "@paddle/paddle-node-sdk";
 import { eq } from "drizzle-orm";
-import { Array, Config, Effect } from "effect";
+import { Array, Config, Effect, Match } from "effect";
 import { Paddle } from "./paddle";
 import { productTable } from "./schema/drizzle";
 
@@ -25,20 +21,38 @@ export class PaddleApi extends Effect.Service<PaddleApi>()("PaddleApi", {
       Effect.gen(function* () {
         const { webhooksUnmarshal } = yield* Paddle;
         const webhookSecret = yield* Config.redacted("WEBHOOK_SECRET_KEY").pipe(
-          Effect.mapError(() => new ErrorMissingWebhookSecret())
+          Effect.mapError(() => new ErrorWebhook({ reason: "missing-secret" }))
         );
 
-        const eventData = yield* Effect.fromNullable(
-          webhooksUnmarshal({
-            payload,
-            webhookSecret,
-            paddleSignature,
-          })
-        ).pipe(Effect.mapError(() => new ErrorVerifySignature()));
+        const eventData = yield* webhooksUnmarshal({
+          payload,
+          webhookSecret,
+          paddleSignature,
+        }).pipe(
+          Effect.mapError(
+            () => new ErrorWebhook({ reason: "verify-signature" })
+          )
+        );
 
         yield* Effect.log(eventData);
-
-        return true;
+        return yield* Match.value(eventData).pipe(
+          Match.when({ eventType: EventName.ProductCreated }, ({ data }) =>
+            Effect.gen(function* () {
+              const drizzle = yield* PgDrizzle;
+              yield* drizzle.insert(productTable).values({
+                slug: globalThis.crypto.randomUUID(),
+                name: data.name,
+                description: data.description,
+                imageUrl: data.imageUrl,
+                price: 10,
+              });
+              return true;
+            }).pipe(
+              Effect.mapError(() => new ErrorWebhook({ reason: "query-error" }))
+            )
+          ),
+          Match.orElse(() => Effect.succeed(true))
+        );
       }),
     getProduct: ({ slug }: { slug: string }) =>
       Effect.gen(function* () {
