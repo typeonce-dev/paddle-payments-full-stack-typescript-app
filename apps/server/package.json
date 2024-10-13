@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsx watch src/main.ts",
+    "test": "vitest",
     "typecheck": "tsc"
   },
   "dependencies": {
