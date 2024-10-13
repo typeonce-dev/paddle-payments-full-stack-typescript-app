@@ -1,7 +1,6 @@
 import {
   ErrorInvalidProduct,
   ErrorMissingWebhookSecret,
-  ErrorSqlQuery,
   ErrorVerifySignature,
   MainApi,
 } from "@app/api-client";
@@ -9,7 +8,8 @@ import { PaddleProduct } from "@app/api-client/schemas";
 import { HttpApiBuilder } from "@effect/platform";
 import { Schema } from "@effect/schema";
 import { PgDrizzle } from "@effect/sql-drizzle/Pg";
-import { Array, Config, Effect, Redacted } from "effect";
+import { eq } from "drizzle-orm";
+import { Array, Config, Effect } from "effect";
 import { Paddle } from "./paddle";
 import { productTable } from "./schema/drizzle";
 
@@ -21,17 +21,17 @@ export const PaddleApiLive = HttpApiBuilder.group(
       // https://developer.paddle.com/webhooks/signature-verification#verify-sdks
       HttpApiBuilder.handle("webhook", ({ payload, headers }) =>
         Effect.gen(function* () {
-          const { paddle } = yield* Paddle;
+          const { webhooksUnmarshal } = yield* Paddle;
           const webhookSecret = yield* Config.redacted(
             "WEBHOOK_SECRET_KEY"
           ).pipe(Effect.mapError(() => new ErrorMissingWebhookSecret()));
 
           const eventData = yield* Effect.fromNullable(
-            paddle.webhooks.unmarshal(
+            webhooksUnmarshal({
               payload,
-              Redacted.value(webhookSecret),
-              headers["paddle-signature"]
-            )
+              webhookSecret,
+              paddleSignature: headers["paddle-signature"],
+            })
           ).pipe(Effect.mapError(() => new ErrorVerifySignature()));
 
           yield* Effect.log(eventData);
@@ -41,46 +41,22 @@ export const PaddleApiLive = HttpApiBuilder.group(
       ),
       HttpApiBuilder.handle("product", ({ path: { slug } }) =>
         Effect.gen(function* () {
-          const { query, productIdFromSlug } = yield* Paddle;
-          const productId = yield* productIdFromSlug(slug).pipe(
-            Effect.mapError(() => new ErrorInvalidProduct())
-          );
+          const drizzle = yield* PgDrizzle;
 
-          const rawProduct = yield* query((_) =>
-            _.products.get(productId, {
-              include: ["prices"],
-            })
-          ).pipe(Effect.mapError(() => new ErrorInvalidProduct()));
+          const product = yield* drizzle
+            .select()
+            .from(productTable)
+            .where(eq(productTable.slug, slug))
+            .limit(1)
+            .pipe(
+              Effect.flatMap(Array.head),
+              Effect.mapError(() => new ErrorInvalidProduct())
+            );
 
-          yield* Effect.log(rawProduct);
-
-          return yield* Schema.decodeUnknown(PaddleProduct)(rawProduct).pipe(
+          return yield* Schema.decodeUnknown(PaddleProduct)(product).pipe(
             Effect.tapError((parseError) => Effect.logError(parseError)),
             Effect.mapError(() => new ErrorInvalidProduct())
           );
-        })
-      ),
-      HttpApiBuilder.handle("product-add", ({ payload }) =>
-        Effect.gen(function* () {
-          const db = yield* PgDrizzle;
-          const product = yield* db
-            .insert(productTable)
-            .values({
-              name: payload.name,
-              description: payload.description,
-              imageUrl: payload.imageUrl,
-              price: payload.price,
-            })
-            .returning()
-            .pipe(
-              Effect.flatMap(Array.head),
-              Effect.tapError((error) => Effect.logError(error)),
-              Effect.mapError(() => new ErrorSqlQuery())
-            );
-
-          yield* Effect.log(product);
-
-          return product.id;
         })
       )
     )

@@ -46,20 +46,6 @@ class PaddleApi extends HttpApiGroup.make("paddle").pipe(
         })
       )
     )
-  ),
-  HttpApiGroup.add(
-    HttpApiEndpoint.post("product-add", "/api/product/add").pipe(
-      HttpApiEndpoint.addError(ErrorSqlQuery),
-      HttpApiEndpoint.setPayload(
-        Schema.Struct({
-          name: Schema.NonEmptyString,
-          description: Schema.NullOr(Schema.NonEmptyString),
-          imageUrl: Schema.NullOr(Schema.NonEmptyString),
-          price: Schema.Number.pipe(Schema.nonNegative()),
-        })
-      ),
-      HttpApiEndpoint.setSuccess(Schema.Number)
-    )
   )
 ) {}
 

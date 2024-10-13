@@ -1,59 +1,33 @@
-import { ProductId } from "@app/api-client/schemas";
 import { Schema } from "@effect/schema";
-import * as _Paddle from "@paddle/paddle-node-sdk";
-import { Config, Context, Effect, Layer, Redacted } from "effect";
+import { Effect, Redacted } from "effect";
+import { PaddleSdk } from "./paddle-sdk";
 
-export class ErrorPaddleQuery extends Schema.TaggedError<ErrorPaddleQuery>()(
-  "ErrorPaddleQuery",
+export class ErrorPaddle extends Schema.TaggedError<ErrorPaddle>()(
+  "ErrorPaddle",
   { cause: Schema.Unknown }
 ) {}
 
-interface PaddleConfig {
-  readonly apiKey: Redacted.Redacted;
-  readonly productId: Redacted.Redacted;
-}
+export class Paddle extends Effect.Service<Paddle>()("Paddle", {
+  effect: Effect.gen(function* () {
+    const paddle = yield* PaddleSdk;
 
-const make = ({ apiKey, productId }: PaddleConfig) =>
-  Effect.gen(function* () {
-    const paddle = new _Paddle.Paddle(Redacted.value(apiKey), {
-      environment: _Paddle.Environment.sandbox,
-      logLevel: _Paddle.LogLevel.verbose,
-    });
-
-    const query = <T>(execute: (_: typeof paddle) => Promise<T>) =>
-      Effect.tryPromise({
-        try: () => execute(paddle),
-        catch: (cause) => new ErrorPaddleQuery({ cause }),
-      });
-
-    const productIdFromSlug = (slug: string) =>
-      Effect.liftPredicate(
-        slug,
-        (s) => s === "premium",
-        () =>
-          new ErrorPaddleQuery({
-            cause: new globalThis.Error("Unknown product slug"),
-          })
-      ).pipe(
-        Effect.andThen(
-          Schema.decode(ProductId)(Redacted.value(productId)).pipe(
-            Effect.mapError(
-              () =>
-                new ErrorPaddleQuery({
-                  cause: new globalThis.Error("Invalid product slug"),
-                })
-            )
-          )
+    const webhooksUnmarshal = ({
+      paddleSignature,
+      payload,
+      webhookSecret,
+    }: {
+      payload: string;
+      webhookSecret: Redacted.Redacted;
+      paddleSignature: string;
+    }) =>
+      Effect.fromNullable(
+        paddle.webhooks.unmarshal(
+          payload,
+          Redacted.value(webhookSecret),
+          paddleSignature
         )
-      );
+      ).pipe(Effect.mapError((cause) => new ErrorPaddle({ cause })));
 
-    return { paddle, query, productIdFromSlug };
-  });
-
-export class Paddle extends Context.Tag("Paddle")<
-  Paddle,
-  Effect.Effect.Success<ReturnType<typeof make>>
->() {
-  static readonly Live = (config: Config.Config.Wrap<PaddleConfig>) =>
-    Config.unwrap(config).pipe(Effect.flatMap(make), Layer.effect(this));
-}
+    return { webhooksUnmarshal };
+  }),
+}) {}
