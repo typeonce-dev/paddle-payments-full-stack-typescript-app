@@ -22,7 +22,7 @@ export class ErrorSqlQuery extends Schema.TaggedError<ErrorSqlQuery>()(
   {}
 ) {}
 
-class PaddleApi extends HttpApiGroup.make("paddle").pipe(
+export class PaddleApi extends HttpApiGroup.make("paddle").pipe(
   HttpApiGroup.add(
     HttpApiEndpoint.post("webhook", "/paddle/webhook").pipe(
       HttpApiEndpoint.addError(ErrorMissingWebhookSecret),
