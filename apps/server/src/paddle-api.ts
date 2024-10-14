@@ -1,5 +1,5 @@
 import { ErrorInvalidProduct, ErrorWebhook, MainApi } from "@app/api-client";
-import { PaddleProduct } from "@app/api-client/schemas";
+import { PaddlePrice, PaddleProduct } from "@app/api-client/schemas";
 import { HttpApiBuilder } from "@effect/platform";
 import { Schema } from "@effect/schema";
 import { PgDrizzle } from "@effect/sql-drizzle/Pg";
@@ -73,17 +73,29 @@ export class PaddleApi extends Effect.Service<PaddleApi>()("PaddleApi", {
       Effect.gen(function* () {
         const drizzle = yield* PgDrizzle;
 
-        const product = yield* drizzle
+        const { price, product } = yield* drizzle
           .select()
           .from(productTable)
           .where(eq(productTable.slug, slug))
           .limit(1)
+          .leftJoin(priceTable, eq(productTable.id, priceTable.productId))
           .pipe(
             Effect.flatMap(Array.head),
             Effect.mapError(() => new ErrorInvalidProduct())
           );
 
-        return yield* Schema.decodeUnknown(PaddleProduct)(product).pipe(
+        return yield* Effect.all({
+          product: Schema.decode(PaddleProduct)(product),
+          price: Effect.fromNullable(price).pipe(
+            Effect.flatMap((price) =>
+              Effect.fromNullable(price.productId).pipe(
+                Effect.flatMap((productId) =>
+                  Schema.decode(PaddlePrice)({ ...price, productId })
+                )
+              )
+            )
+          ),
+        }).pipe(
           Effect.tapError((parseError) => Effect.logError(parseError)),
           Effect.mapError(() => new ErrorInvalidProduct())
         );

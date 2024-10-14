@@ -1,6 +1,6 @@
 import { HttpApi, HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
 import { Schema } from "@effect/schema";
-import { PaddleProduct } from "./schemas/paddle";
+import { PaddlePrice, PaddleProduct } from "./schemas/paddle";
 
 export class ErrorWebhook extends Schema.TaggedError<ErrorWebhook>()(
   "ErrorWebhook",
@@ -35,7 +35,12 @@ export class PaddleApi extends HttpApiGroup.make("paddle").pipe(
   HttpApiGroup.add(
     HttpApiEndpoint.get("product", "/paddle/product/:slug").pipe(
       HttpApiEndpoint.addError(ErrorInvalidProduct),
-      HttpApiEndpoint.setSuccess(PaddleProduct),
+      HttpApiEndpoint.setSuccess(
+        Schema.Struct({
+          product: PaddleProduct,
+          price: PaddlePrice,
+        })
+      ),
       HttpApiEndpoint.setPath(
         Schema.Struct({
           slug: Schema.NonEmptyString,

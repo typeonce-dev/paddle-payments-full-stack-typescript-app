@@ -1,5 +1,5 @@
 import { MainApi } from "@app/api-client";
-import { PaddleProduct, ProductId } from "@app/api-client/schemas";
+import { EntityId, PaddleProduct } from "@app/api-client/schemas";
 import { HttpApiBuilder, HttpApiClient, HttpServer } from "@effect/platform";
 import { NodeHttpServer } from "@effect/platform-node";
 import * as PgDrizzle from "@effect/sql-drizzle/Pg";
@@ -9,7 +9,7 @@ import { Cause, ConfigProvider, Console, Effect, Layer } from "effect";
 import { Paddle } from "../src/paddle";
 import { PaddleApi, PaddleApiLive } from "../src/paddle-api";
 import { PaddleSdk } from "../src/paddle-sdk";
-import { productTable } from "../src/schema/drizzle";
+import { priceTable, productTable } from "../src/schema/drizzle";
 import { PgContainer } from "./pg-container";
 
 const TestConfigProvider = Layer.setConfigProvider(
@@ -65,6 +65,12 @@ it.layer(LayerTest, { timeout: "30 seconds" })("MainApi", (it) => {
       const drizzle = yield* PgDrizzle.PgDrizzle;
 
       yield* drizzle.execute(sql`
+          DO $$ BEGIN
+            CREATE TYPE "public"."currencyCode" AS ENUM('USD','EUR','GBP','JPY','AUD','CAD','CHF','HKD','SGD','SEK','ARS','BRL','CNY','COP','CZK','DKK','HUF','ILS','INR','KRW','MXN','NOK','NZD','PLN','RUB','THB','TRY','TWD','UAH', 'ZAR');
+            EXCEPTION
+            WHEN duplicate_object THEN null;
+            END $$;
+
           CREATE TABLE IF NOT EXISTS "product" (
             "id" varchar(255) PRIMARY KEY NOT NULL,
             "slug" varchar(255) NOT NULL,
@@ -72,6 +78,19 @@ it.layer(LayerTest, { timeout: "30 seconds" })("MainApi", (it) => {
             "description" varchar(255),
             "imageUrl" varchar(255)
           );
+
+          CREATE TABLE IF NOT EXISTS "price" (
+            "id" varchar(255) PRIMARY KEY NOT NULL,
+            "productId" varchar(255),
+            "amount" varchar(255) NOT NULL,
+            "currencyCode" "currencyCode" NOT NULL
+          );
+          --> statement-breakpoint
+          DO $$ BEGIN
+          ALTER TABLE "price" ADD CONSTRAINT "price_productId_product_id_fk" FOREIGN KEY ("productId") REFERENCES "public"."product"("id") ON DELETE no action ON UPDATE no action;
+          EXCEPTION
+          WHEN duplicate_object THEN null;
+          END $$;
         `);
 
       yield* drizzle.insert(productTable).values({
@@ -82,10 +101,19 @@ it.layer(LayerTest, { timeout: "30 seconds" })("MainApi", (it) => {
         id: "test",
       });
 
-      const result = yield* client.paddle.product({ path: { slug: "test" } });
-      expect(result).toStrictEqual(
+      yield* drizzle.insert(priceTable).values({
+        productId: "test",
+        amount: "100",
+        currencyCode: "USD",
+        id: "test",
+      });
+
+      const { product } = yield* client.paddle.product({
+        path: { slug: "test" },
+      });
+      expect(product).toStrictEqual(
         PaddleProduct.make({
-          id: ProductId.make("test"),
+          id: EntityId.make("test"),
           slug: "test",
           name: "Test",
           price: 100,

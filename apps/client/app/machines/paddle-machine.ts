@@ -1,4 +1,4 @@
-import type { PaddleProduct } from "@app/api-client/schemas";
+import type { PaddlePrice, PaddleProduct } from "@app/api-client/schemas";
 import { CheckoutEventNames, type Paddle as _Paddle } from "@paddle/paddle-js";
 import { Effect } from "effect";
 import { assertEvent, assign, fromPromise, setup } from "xstate";
@@ -47,6 +47,7 @@ export const machine = setup({
       paddle: _Paddle | null;
       clientToken: string;
       product: PaddleProduct | null;
+      price: PaddlePrice | null;
     },
     events: {} as
       | Readonly<{ type: "xstate.init"; input: Input }>
@@ -59,6 +60,7 @@ export const machine = setup({
   context: ({ input }) => ({
     paddle: null,
     product: null,
+    price: null,
     clientToken: input.clientToken,
   }),
   initial: "LoadingProduct",
@@ -73,7 +75,10 @@ export const machine = setup({
         onError: { target: "Error" },
         onDone: {
           target: "Init",
-          actions: assign(({ event }) => ({ product: event.output })),
+          actions: assign(({ event }) => ({
+            product: event.output.product,
+            price: event.output.price,
+          })),
         },
       },
     },
@@ -106,7 +111,7 @@ export const machine = setup({
           }),
         ({ context }) =>
           context.paddle?.Checkout.open({
-            items: [{ priceId: context.product?.prices[0].id!, quantity: 1 }],
+            items: [{ priceId: context.price?.id!, quantity: 1 }],
           }),
       ],
       on: {
