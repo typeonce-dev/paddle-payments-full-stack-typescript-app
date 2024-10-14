@@ -7,7 +7,8 @@ import { EventName } from "@paddle/paddle-node-sdk";
 import { eq } from "drizzle-orm";
 import { Array, Config, Effect, Match } from "effect";
 import { Paddle } from "./paddle";
-import { productTable } from "./schema/drizzle";
+import { priceTable, productTable } from "./schema/drizzle";
+import { slugFromName } from "./utils";
 
 export class PaddleApi extends Effect.Service<PaddleApi>()("PaddleApi", {
   succeed: {
@@ -40,11 +41,25 @@ export class PaddleApi extends Effect.Service<PaddleApi>()("PaddleApi", {
             Effect.gen(function* () {
               const drizzle = yield* PgDrizzle;
               yield* drizzle.insert(productTable).values({
-                slug: globalThis.crypto.randomUUID(),
+                id: data.id,
                 name: data.name,
                 description: data.description,
                 imageUrl: data.imageUrl,
-                price: 10,
+                slug: slugFromName(data.name),
+              });
+              return true;
+            }).pipe(
+              Effect.mapError(() => new ErrorWebhook({ reason: "query-error" }))
+            )
+          ),
+          Match.when({ eventType: EventName.PriceCreated }, ({ data }) =>
+            Effect.gen(function* () {
+              const drizzle = yield* PgDrizzle;
+              yield* drizzle.insert(priceTable).values({
+                id: data.id,
+                productId: data.productId,
+                amount: data.unitPrice.amount,
+                currencyCode: data.unitPrice.currencyCode,
               });
               return true;
             }).pipe(

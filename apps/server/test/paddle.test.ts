@@ -66,16 +66,12 @@ it.layer(LayerTest, { timeout: "30 seconds" })("MainApi", (it) => {
 
       yield* drizzle.execute(sql`
           CREATE TABLE IF NOT EXISTS "product" (
-            "id" integer PRIMARY KEY NOT NULL,
-            "name" varchar(255),
-            "price" integer NOT NULL
+            "id" varchar(255) PRIMARY KEY NOT NULL,
+            "slug" varchar(255) NOT NULL,
+            "name" varchar(255) NOT NULL,
+            "description" varchar(255),
+            "imageUrl" varchar(255)
           );
-
-          ALTER TABLE "product" ALTER COLUMN "id" ADD GENERATED ALWAYS AS IDENTITY (sequence name "product_id_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 START WITH 1 CACHE 1);--> statement-breakpoint
-          ALTER TABLE "product" ADD COLUMN "description" varchar(255);--> statement-breakpoint
-          ALTER TABLE "product" ADD COLUMN "imageUrl" varchar(255);
-          ALTER TABLE "product" ADD COLUMN "slug" varchar(255) NOT NULL;--> statement-breakpoint
-          ALTER TABLE "product" ADD CONSTRAINT "product_slug_unique" UNIQUE("slug");
         `);
 
       yield* drizzle.insert(productTable).values({
@@ -83,13 +79,13 @@ it.layer(LayerTest, { timeout: "30 seconds" })("MainApi", (it) => {
         name: "Test",
         description: "Test",
         imageUrl: "https://example.com/image.png",
-        price: 100,
+        id: "test",
       });
 
       const result = yield* client.paddle.product({ path: { slug: "test" } });
       expect(result).toStrictEqual(
         PaddleProduct.make({
-          id: ProductId.make(1),
+          id: ProductId.make("test"),
           slug: "test",
           name: "Test",
           price: 100,

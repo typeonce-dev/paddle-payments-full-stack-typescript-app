@@ -1,0 +1,101 @@
+{
+  "id": "bddf8439-4058-4aa8-a586-242249d5542f",
+  "prevId": "655d7e98-ff5d-4c87-afae-965b5d03d2f3",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.product": {
+      "name": "product",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "imageUrl": {
+          "name": "imageUrl",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "product_slug_unique": {
+          "name": "product_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      }
+    }
+  },
+  "enums": {
+    "public.currencyCode": {
+      "name": "currencyCode",
+      "schema": "public",
+      "values": [
+        "USD",
+        "EUR",
+        "GBP",
+        "JPY",
+        "AUD",
+        "CAD",
+        "CHF",
+        "HKD",
+        "SGD",
+        "SEK",
+        "ARS",
+        "BRL",
+        "CNY",
+        "COP",
+        "CZK",
+        "DKK",
+        "HUF",
+        "ILS",
+        "INR",
+        "KRW",
+        "MXN",
+        "NOK",
+        "NZD",
+        "PLN",
+        "RUB",
+        "THB",
+        "TRY",
+        "TWD",
+        "UAH",
+        "ZAR"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

@@ -22,6 +22,27 @@
       "when": 1728827423141,
       "tag": "0002_complete_mentallo",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1728916107105,
+      "tag": "0003_far_cerise",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1728916681197,
+      "tag": "0004_many_frog_thor",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1728917160257,
+      "tag": "0005_friendly_stick",
+      "breakpoints": true
     }
   ]
 }
