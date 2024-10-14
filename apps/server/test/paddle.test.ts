@@ -1,10 +1,11 @@
 import { MainApi } from "@app/api-client";
 import { PaddleProduct, ProductId } from "@app/api-client/schemas";
-import { HttpApiBuilder } from "@effect/platform";
+import { HttpApiBuilder, HttpApiClient, HttpServer } from "@effect/platform";
+import { NodeHttpServer } from "@effect/platform-node";
 import * as PgDrizzle from "@effect/sql-drizzle/Pg";
 import { expect, it } from "@effect/vitest";
 import { sql } from "drizzle-orm";
-import { ConfigProvider, Effect, Layer } from "effect";
+import { Cause, ConfigProvider, Console, Effect, Layer } from "effect";
 import { Paddle } from "../src/paddle";
 import { PaddleApi, PaddleApiLive } from "../src/paddle-api";
 import { PaddleSdk } from "../src/paddle-sdk";
@@ -22,33 +23,45 @@ const TestConfigProvider = Layer.setConfigProvider(
   )
 );
 
-export const MainApiTest = HttpApiBuilder.api(MainApi).pipe(
-  Layer.provideMerge(
-    PaddleApiLive.pipe(
-      Layer.provideMerge(
-        Layer.mergeAll(
-          PaddleApi.Default,
-          Paddle.Default.pipe(Layer.provide(PaddleSdk.Test)),
-          PgDrizzle.layer.pipe(Layer.provide(PgContainer.ClientLive))
-        )
+const HttpGroupTest = <A, E, R>(groupLayer: Layer.Layer<A, E, R>) =>
+  HttpApiBuilder.Router.unwrap(HttpServer.serve()).pipe(
+    Layer.provideMerge(groupLayer),
+    Layer.provideMerge(NodeHttpServer.layerTest)
+  );
+
+const LayerTest = HttpGroupTest(
+  PaddleApiLive.pipe(
+    Layer.provideMerge(
+      Layer.mergeAll(
+        PaddleApi.Default,
+        Paddle.Default.pipe(Layer.provide(PaddleSdk.Test)),
+        PgDrizzle.layer.pipe(Layer.provide(PgContainer.ClientLive))
       )
     )
-  ),
-  Layer.provide(TestConfigProvider)
-);
+  )
+).pipe(Layer.provide(TestConfigProvider));
 
-it.layer(MainApiTest, { timeout: "30 seconds" })("MainApi", (it) => {
+it.layer(LayerTest, { timeout: "30 seconds" })("MainApi", (it) => {
   it.effect("paddle api webhook", () =>
     Effect.gen(function* () {
-      const api = yield* PaddleApi;
-      const result = yield* api.webhook({ paddleSignature: "", payload: "" });
+      const client = yield* HttpApiClient.make(MainApi);
+      const result = yield* client.paddle
+        .webhook({
+          payload: "",
+          headers: {
+            "paddle-signature": "---",
+          },
+        })
+        .pipe(
+          Effect.tapErrorCause((cause) => Console.log(Cause.pretty(cause)))
+        );
       expect(result).toBe(true);
     })
   );
 
   it.effect("api get product", () =>
     Effect.gen(function* () {
-      const api = yield* PaddleApi;
+      const client = yield* HttpApiClient.make(MainApi);
       const drizzle = yield* PgDrizzle.PgDrizzle;
 
       yield* drizzle.execute(sql`
@@ -73,7 +86,7 @@ it.layer(MainApiTest, { timeout: "30 seconds" })("MainApi", (it) => {
         price: 100,
       });
 
-      const result = yield* api.getProduct({ slug: "test" });
+      const result = yield* client.paddle.product({ path: { slug: "test" } });
       expect(result).toStrictEqual(
         PaddleProduct.make({
           id: ProductId.make(1),
