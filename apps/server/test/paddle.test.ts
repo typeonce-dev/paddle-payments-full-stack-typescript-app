@@ -16,7 +16,6 @@ const TestConfigProvider = Layer.setConfigProvider(
   ConfigProvider.fromMap(
     new Map([
       ["PADDLE_API_KEY", ""],
-      ["PADDLE_PRODUCT_ID", ""],
       ["POSTGRES_PW", ""],
       ["WEBHOOK_SECRET_KEY", ""],
     ])
