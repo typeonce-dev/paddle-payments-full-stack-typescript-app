@@ -19,7 +19,7 @@ export class ErrorSqlQuery extends Schema.TaggedError<ErrorSqlQuery>()(
   {}
 ) {}
 
-export class PaddleApi extends HttpApiGroup.make("paddle").pipe(
+export class PaddleApiGroup extends HttpApiGroup.make("paddle").pipe(
   HttpApiGroup.add(
     HttpApiEndpoint.post("webhook", "/paddle/webhook").pipe(
       HttpApiEndpoint.addError(ErrorWebhook),
@@ -50,4 +50,6 @@ export class PaddleApi extends HttpApiGroup.make("paddle").pipe(
   )
 ) {}
 
-export class MainApi extends HttpApi.empty.pipe(HttpApi.addGroup(PaddleApi)) {}
+export class MainApi extends HttpApi.empty.pipe(
+  HttpApi.addGroup(PaddleApiGroup)
+) {}

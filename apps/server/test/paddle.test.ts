@@ -1,6 +1,11 @@
-import { MainApi } from "@app/api-client";
+import { MainApi, PaddleApiGroup } from "@app/api-client";
 import { EntityId, PaddleProduct } from "@app/api-client/schemas";
-import { HttpApiBuilder, HttpApiClient, HttpServer } from "@effect/platform";
+import {
+  HttpApi,
+  HttpApiBuilder,
+  HttpApiClient,
+  type HttpApiGroup,
+} from "@effect/platform";
 import { NodeHttpServer } from "@effect/platform-node";
 import * as PgDrizzle from "@effect/sql-drizzle/Pg";
 import { expect, it } from "@effect/vitest";
@@ -22,13 +27,22 @@ const TestConfigProvider = Layer.setConfigProvider(
   )
 );
 
-const HttpGroupTest = <A, E, R>(groupLayer: Layer.Layer<A, E, R>) =>
-  HttpApiBuilder.Router.unwrap(HttpServer.serve()).pipe(
-    Layer.provideMerge(groupLayer),
+// https://discord.com/channels/795981131316985866/1294957004791484476/1296039483782856777
+const HttpGroupTest = <Group extends HttpApiGroup.HttpApiGroup.Any, A, E, R>(
+  group: Group,
+  groupLayer: Layer.Layer<A, E, R>
+) =>
+  HttpApiBuilder.serve().pipe(
+    Layer.provideMerge(
+      HttpApiBuilder.api(HttpApi.empty.pipe(HttpApi.addGroup(group))).pipe(
+        Layer.provideMerge(groupLayer)
+      )
+    ),
     Layer.provideMerge(NodeHttpServer.layerTest)
   );
 
 const LayerTest = HttpGroupTest(
+  PaddleApiGroup,
   PaddleApiLive.pipe(
     Layer.provideMerge(
       Layer.mergeAll(
