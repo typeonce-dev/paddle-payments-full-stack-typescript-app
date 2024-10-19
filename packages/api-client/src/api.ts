@@ -5,7 +5,12 @@ import { PaddlePrice, PaddleProduct } from "./schemas/paddle";
 export class ErrorWebhook extends Schema.TaggedError<ErrorWebhook>()(
   "ErrorWebhook",
   {
-    reason: Schema.Literal("missing-secret", "verify-signature", "query-error"),
+    reason: Schema.Literal(
+      "missing-secret",
+      "verify-signature",
+      "query-error",
+      "missing-payload"
+    ),
   }
 ) {}
 
@@ -24,7 +29,6 @@ export class PaddleApiGroup extends HttpApiGroup.make("paddle").pipe(
     HttpApiEndpoint.post("webhook", "/paddle/webhook").pipe(
       HttpApiEndpoint.addError(ErrorWebhook),
       HttpApiEndpoint.setSuccess(Schema.Boolean),
-      HttpApiEndpoint.setPayload(Schema.String),
       HttpApiEndpoint.setHeaders(
         Schema.Struct({
           "paddle-signature": Schema.NonEmptyString,

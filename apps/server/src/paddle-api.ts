@@ -1,6 +1,6 @@
 import { ErrorInvalidProduct, ErrorWebhook, MainApi } from "@app/api-client";
 import { PaddlePrice, PaddleProduct } from "@app/api-client/schemas";
-import { HttpApiBuilder } from "@effect/platform";
+import { HttpApiBuilder, HttpServerRequest } from "@effect/platform";
 import { Schema } from "@effect/schema";
 import { PgDrizzle } from "@effect/sql-drizzle/Pg";
 import { EventName } from "@paddle/paddle-node-sdk";
@@ -109,15 +109,23 @@ export const PaddleApiLive = HttpApiBuilder.group(
   (handlers) =>
     handlers.pipe(
       // https://developer.paddle.com/webhooks/signature-verification#verify-sdks
-      HttpApiBuilder.handle("webhook", ({ payload, headers }) =>
-        PaddleApi.pipe(
-          Effect.flatMap((api) =>
-            api.webhook({
-              paddleSignature: headers["paddle-signature"],
-              payload,
-            })
-          )
-        )
+      HttpApiBuilder.handle("webhook", ({ headers }) =>
+        Effect.gen(function* () {
+          const request = yield* HttpServerRequest.HttpServerRequest;
+          const payload = yield* request.text.pipe(
+            Effect.mapError(
+              () => new ErrorWebhook({ reason: "missing-payload" })
+            )
+          );
+          return yield* PaddleApi.pipe(
+            Effect.flatMap((api) =>
+              api.webhook({
+                paddleSignature: headers["paddle-signature"],
+                payload,
+              })
+            )
+          );
+        })
       ),
       HttpApiBuilder.handle("product", ({ path: { slug } }) =>
         PaddleApi.pipe(Effect.flatMap((api) => api.getProduct({ slug })))
