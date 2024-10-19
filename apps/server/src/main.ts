@@ -14,8 +14,8 @@ const PaddleSdkConfig = Config.all({
   apiKey: Config.redacted("PADDLE_API_KEY"),
 });
 
-const PaddleSkdLive = PaddleSdk.Default(PaddleSdkConfig);
-const PaddleLive = Paddle.Default.pipe(Layer.provide(PaddleSkdLive));
+const PaddleSdkLive = PaddleSdk.Default(PaddleSdkConfig);
+const PaddleLive = Paddle.Default.pipe(Layer.provide(PaddleSdkLive));
 
 const MainApiLive = HttpApiBuilder.api(MainApi).pipe(
   Layer.provide(
