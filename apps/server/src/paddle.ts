@@ -1,5 +1,4 @@
-import { Schema } from "@effect/schema";
-import { Effect, Redacted } from "effect";
+import { Effect, Redacted, Schema } from "effect";
 import { PaddleSdk } from "./paddle-sdk";
 
 export class ErrorPaddle extends Schema.TaggedError<ErrorPaddle>()(
@@ -30,4 +29,5 @@ export class Paddle extends Effect.Service<Paddle>()("Paddle", {
 
     return { webhooksUnmarshal };
   }),
+  dependencies: [PaddleSdk.Default],
 }) {}

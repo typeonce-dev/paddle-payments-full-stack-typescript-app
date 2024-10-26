@@ -1,24 +1,15 @@
 import { MainApi } from "@app/api-client";
 import { FetchHttpClient, HttpApiClient } from "@effect/platform";
-import { Config, Context, Effect, Layer } from "effect";
+import { Config, Effect } from "effect";
 
-interface ApiConfig {
-  readonly baseUrl: string;
-}
-
-const make = ({ baseUrl }: ApiConfig) =>
-  HttpApiClient.make(MainApi, {
-    baseUrl,
-  });
-
-export class Api extends Context.Tag("Api")<
-  Api,
-  Effect.Effect.Success<ReturnType<typeof make>>
->() {
-  static readonly Live = (config: Config.Config.Wrap<ApiConfig>) =>
-    Config.unwrap(config).pipe(
-      Effect.flatMap(make),
-      Layer.effect(this),
-      Layer.provide(FetchHttpClient.layer)
+export class Api extends Effect.Service<Api>()("Api", {
+  effect: Effect.gen(function* () {
+    const baseUrl = yield* Config.string("API_BASE_URL").pipe(
+      Config.withDefault("http://localhost:3000")
     );
-}
+    return yield* HttpApiClient.make(MainApi, {
+      baseUrl,
+    });
+  }),
+  dependencies: [FetchHttpClient.layer],
+}) {}

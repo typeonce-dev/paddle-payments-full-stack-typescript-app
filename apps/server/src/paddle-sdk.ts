@@ -1,23 +1,15 @@
 import * as _Paddle from "@paddle/paddle-node-sdk";
-import { Config, Context, Effect, Layer, Redacted } from "effect";
+import { Config, Effect, Layer, Redacted } from "effect";
 
-interface PaddleSdkConfig {
-  readonly apiKey: Redacted.Redacted;
-}
-
-const make = ({ apiKey }: PaddleSdkConfig) =>
-  new _Paddle.Paddle(Redacted.value(apiKey), {
-    environment: _Paddle.Environment.sandbox,
-    logLevel: _Paddle.LogLevel.verbose,
-  });
-
-export class PaddleSdk extends Context.Tag("PaddleSdk")<
-  PaddleSdk,
-  ReturnType<typeof make>
->() {
-  static readonly Default = (config: Config.Config.Wrap<PaddleSdkConfig>) =>
-    Config.unwrap(config).pipe(Effect.map(make), Layer.effect(this));
-
+export class PaddleSdk extends Effect.Service<PaddleSdk>()("PaddleSdk", {
+  effect: Effect.gen(function* () {
+    const apiKey = yield* Config.redacted("PADDLE_API_KEY");
+    return new _Paddle.Paddle(Redacted.value(apiKey), {
+      environment: _Paddle.Environment.sandbox,
+      logLevel: _Paddle.LogLevel.verbose,
+    });
+  }),
+}) {
   static readonly Test = Layer.effect(
     this,
     Effect.sync(() => {
@@ -43,7 +35,7 @@ export class PaddleSdk extends Context.Tag("PaddleSdk")<
         } as _Paddle.ProductsResource;
       }
 
-      return new Test("");
+      return PaddleSdk.make(new Test(""));
     })
   );
 }

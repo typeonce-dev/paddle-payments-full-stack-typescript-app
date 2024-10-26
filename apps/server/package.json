@@ -10,21 +10,20 @@
   },
   "dependencies": {
     "@app/api-client": "workspace:*",
-    "@effect/platform": "^0.68.2",
-    "@effect/platform-node": "^0.63.2",
-    "@effect/schema": "^0.75.3",
-    "@effect/sql": "^0.16.2",
-    "@effect/sql-drizzle": "^0.14.2",
-    "@effect/sql-pg": "^0.16.2",
+    "@effect/platform": "^0.69.9",
+    "@effect/platform-node": "^0.64.10",
+    "@effect/sql": "^0.18.10",
+    "@effect/sql-drizzle": "^0.16.10",
+    "@effect/sql-pg": "^0.18.10",
     "@paddle/paddle-node-sdk": "^1.7.0",
     "dotenv": "^16.4.5",
     "drizzle-kit": "^0.25.0",
     "drizzle-orm": "^0.34.1",
-    "effect": "^3.9.1",
+    "effect": "^3.10.4",
     "pg": "^8.13.0"
   },
   "devDependencies": {
-    "@effect/vitest": "^0.12.0",
+    "@effect/vitest": "^0.13.4",
     "@testcontainers/postgresql": "^10.13.2",
     "@types/node": "^22.7.4",
     "tsx": "^4.19.1"

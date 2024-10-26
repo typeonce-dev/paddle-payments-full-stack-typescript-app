@@ -63,20 +63,6 @@ it.layer(LayerTest, { timeout: "30 seconds" })("MainApi", (it) => {
     })
   );
 
-  // it.effect("paddle api webhook error", () =>
-  //   Effect.gen(function* () {
-  //     const client = yield* HttpApiClient.make(MainApi);
-  //     const result = yield* client.paddle
-  //       .webhook({
-  //         headers: {
-  //           "paddle-signature": "",
-  //         },
-  //       })
-  //       .pipe(Effect.flip);
-  //     expect(result._tag).toBe("HttpApiDecodeError");
-  //   })
-  // );
-
   it.effect("api get product", () =>
     Effect.gen(function* () {
       const client = yield* HttpApiClient.make(MainApi);
@@ -129,6 +115,7 @@ it.layer(LayerTest, { timeout: "30 seconds" })("MainApi", (it) => {
       const { product } = yield* client.paddle.product({
         path: { slug: "test" },
       });
+
       expect(product).toStrictEqual(
         PaddleProduct.make({
           id: EntityId.make("test"),

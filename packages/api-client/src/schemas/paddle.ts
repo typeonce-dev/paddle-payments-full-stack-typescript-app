@@ -1,4 +1,4 @@
-import { Schema } from "@effect/schema";
+import { Schema } from "effect";
 
 export const EntityId = Schema.NonEmptyString.pipe(Schema.brand("EntityId"));
 export const CurrencyCode = Schema.Literal(

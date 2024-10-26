@@ -24,11 +24,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/api-client
       '@effect/platform':
-        specifier: ^0.68.2
-        version: 0.68.2(@effect/schema@0.75.3)(effect@3.9.1)
-      '@effect/schema':
-        specifier: ^0.75.3
-        version: 0.75.3(effect@3.9.1)
+        specifier: ^0.69.9
+        version: 0.69.9(effect@3.10.4)
       '@paddle/paddle-js':
         specifier: ^1.2.3
         version: 1.2.3
@@ -48,8 +45,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       effect:
-        specifier: ^3.9.1
-        version: 3.9.1
+        specifier: ^3.10.4
+        version: 3.10.4
       isbot:
         specifier: ^5.1.17
         version: 5.1.17
@@ -97,23 +94,20 @@ importers:
         specifier: workspace:*
         version: link:../../packages/api-client
       '@effect/platform':
-        specifier: ^0.68.2
-        version: 0.68.2(@effect/schema@0.75.3)(effect@3.9.1)
+        specifier: ^0.69.9
+        version: 0.69.9(effect@3.10.4)
       '@effect/platform-node':
-        specifier: ^0.63.2
-        version: 0.63.2(@effect/platform@0.68.2)(effect@3.9.1)
-      '@effect/schema':
-        specifier: ^0.75.3
-        version: 0.75.3(effect@3.9.1)
+        specifier: ^0.64.10
+        version: 0.64.10(@effect/platform@0.69.9)(effect@3.10.4)
       '@effect/sql':
-        specifier: ^0.16.2
-        version: 0.16.2(@effect/experimental@0.29.2)(@effect/platform@0.68.2)(@effect/schema@0.75.3)(effect@3.9.1)
+        specifier: ^0.18.10
+        version: 0.18.10(@effect/experimental@0.30.10)(@effect/platform@0.69.9)(effect@3.10.4)
       '@effect/sql-drizzle':
-        specifier: ^0.14.2
-        version: 0.14.2(@effect/sql@0.16.2)(drizzle-orm@0.34.1)(effect@3.9.1)
+        specifier: ^0.16.10
+        version: 0.16.10(@effect/sql@0.18.10)(drizzle-orm@0.34.1)(effect@3.10.4)
       '@effect/sql-pg':
-        specifier: ^0.16.2
-        version: 0.16.2(@effect/platform@0.68.2)(@effect/sql@0.16.2)(effect@3.9.1)
+        specifier: ^0.18.10
+        version: 0.18.10(@effect/platform@0.69.9)(@effect/sql@0.18.10)(effect@3.10.4)
       '@paddle/paddle-node-sdk':
         specifier: ^1.7.0
         version: 1.7.0
@@ -127,15 +121,15 @@ importers:
         specifier: ^0.34.1
         version: 0.34.1(pg@8.13.0)
       effect:
-        specifier: ^3.9.1
-        version: 3.9.1
+        specifier: ^3.10.4
+        version: 3.10.4
       pg:
         specifier: ^8.13.0
         version: 8.13.0
     devDependencies:
       '@effect/vitest':
-        specifier: ^0.12.0
-        version: 0.12.0(effect@3.9.1)(vitest@2.1.2)
+        specifier: ^0.13.4
+        version: 0.13.4(effect@3.10.4)(vitest@2.1.2)
       '@testcontainers/postgresql':
         specifier: ^10.13.2
         version: 10.13.2
@@ -149,14 +143,11 @@ importers:
   packages/api-client:
     dependencies:
       '@effect/platform':
-        specifier: ^0.68.2
-        version: 0.68.2(@effect/schema@0.75.3)(effect@3.9.1)
-      '@effect/schema':
-        specifier: ^0.75.3
-        version: 0.75.3(effect@3.9.1)
+        specifier: ^0.69.9
+        version: 0.69.9(effect@3.10.4)
       effect:
-        specifier: ^3.9.1
-        version: 3.9.1
+        specifier: ^3.10.4
+        version: 3.10.4
 
 packages:
 
@@ -489,13 +480,12 @@ packages:
     resolution: {integrity: sha512-AHy0vjc+n/4w/8Mif+w86qpppHuF3AyXbcWW+R/W7GNA3F5/p2nuhlkCJaTXSLZheB4l1rtHzOfr9A7NwoR/Zg==}
     dev: false
 
-  /@effect/experimental@0.29.2(@effect/platform-node@0.63.2)(@effect/platform@0.68.2)(@effect/schema@0.75.3)(effect@3.9.1):
-    resolution: {integrity: sha512-y/JRHkn3zX83+6kGQy3rVJ+GQyMgisZZew4JA+K2ttKVhAjQxgjczSacymTFt3a5pFLsiHu/C8Glec+SPPTmmg==}
+  /@effect/experimental@0.30.10(@effect/platform-node@0.64.10)(@effect/platform@0.69.9)(effect@3.10.4):
+    resolution: {integrity: sha512-FSnZm0HmmX4Uw9m1t4ZAUaqFYZqjmnb6YbkjZjtHwNoGrKWimZzReafEiPAiIgkBIH4j5QfeCjJE52dur5ftNQ==}
     peerDependencies:
-      '@effect/platform': ^0.68.2
-      '@effect/platform-node': ^0.63.2
-      '@effect/schema': ^0.75.3
-      effect: ^3.9.1
+      '@effect/platform': ^0.69.9
+      '@effect/platform-node': ^0.64.10
+      effect: ^3.10.4
       ioredis: ^5
       lmdb: ^3
       ws: ^8
@@ -509,34 +499,33 @@ packages:
       ws:
         optional: true
     dependencies:
-      '@effect/platform': 0.68.2(@effect/schema@0.75.3)(effect@3.9.1)
-      '@effect/platform-node': 0.63.2(@effect/platform@0.68.2)(effect@3.9.1)
-      '@effect/schema': 0.75.3(effect@3.9.1)
-      effect: 3.9.1
+      '@effect/platform': 0.69.9(effect@3.10.4)
+      '@effect/platform-node': 0.64.10(@effect/platform@0.69.9)(effect@3.10.4)
+      effect: 3.10.4
       msgpackr: 1.11.0
     dev: false
 
-  /@effect/platform-node-shared@0.18.2(@effect/platform@0.68.2)(effect@3.9.1):
-    resolution: {integrity: sha512-bk0RwJsBcXM+G1NsaPYOszt9sNMq4xXsKkp87zL7cpr7beKvIkwgGKgoAD/TyeZJrGgfwnU5TWKnv7iOyeSg0Q==}
+  /@effect/platform-node-shared@0.19.9(@effect/platform@0.69.9)(effect@3.10.4):
+    resolution: {integrity: sha512-XR5EraZRIJ9Uhgh/A6u3cuOH0uVfKdD7DhpStpjJAw8ShntDLjRwI0QKWrJTL3Z3zDqVkGvdZoFSxBeF4cOcxA==}
     peerDependencies:
-      '@effect/platform': ^0.68.2
-      effect: ^3.9.1
+      '@effect/platform': ^0.69.9
+      effect: ^3.10.4
     dependencies:
-      '@effect/platform': 0.68.2(@effect/schema@0.75.3)(effect@3.9.1)
+      '@effect/platform': 0.69.9(effect@3.10.4)
       '@parcel/watcher': 2.4.1
-      effect: 3.9.1
+      effect: 3.10.4
       multipasta: 0.2.5
     dev: false
 
-  /@effect/platform-node@0.63.2(@effect/platform@0.68.2)(effect@3.9.1):
-    resolution: {integrity: sha512-XMeMpp5UNIzyflBPVcdnR8BXW9oNB1nAJa+0/4mUfhgKGm/0I36SIWVkLrDTlB4x9inLzqnBvrngMduDroW7jA==}
+  /@effect/platform-node@0.64.10(@effect/platform@0.69.9)(effect@3.10.4):
+    resolution: {integrity: sha512-V8dC6GGxC5VBGEoTApSX5+MJTKDNPeSFzdQiZroDvAulOoA18hTj3jVz2pgtP9DjlJ8EIUEW8lMETD149FMbWA==}
     peerDependencies:
-      '@effect/platform': ^0.68.2
-      effect: ^3.9.1
+      '@effect/platform': ^0.69.9
+      effect: ^3.10.4
     dependencies:
-      '@effect/platform': 0.68.2(@effect/schema@0.75.3)(effect@3.9.1)
-      '@effect/platform-node-shared': 0.18.2(@effect/platform@0.68.2)(effect@3.9.1)
-      effect: 3.9.1
+      '@effect/platform': 0.69.9(effect@3.10.4)
+      '@effect/platform-node-shared': 0.19.9(@effect/platform@0.69.9)(effect@3.10.4)
+      effect: 3.10.4
       mime: 3.0.0
       undici: 6.19.8
       ws: 8.18.0
@@ -545,75 +534,62 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@effect/platform@0.68.2(@effect/schema@0.75.3)(effect@3.9.1):
-    resolution: {integrity: sha512-uKjXUOlmipQggEYBUXrlhJ9JEzq+Xaw3KUWEER3WtindlLuUp2IuMkNCwASSt3LBZZvi9Ir8QgGrAxa0n6T5hg==}
+  /@effect/platform@0.69.9(effect@3.10.4):
+    resolution: {integrity: sha512-gdp5rLxKLBBI895ycBRkuwCQHnYf8g6+Sdg5tFhuH+axIdgP4J8dGzIvYBGAkRMw/4k2BYeSKKf8ZONYnNWcWg==}
     peerDependencies:
-      '@effect/schema': ^0.75.3
-      effect: ^3.9.1
+      effect: ^3.10.4
     dependencies:
-      '@effect/schema': 0.75.3(effect@3.9.1)
-      effect: 3.9.1
+      effect: 3.10.4
       find-my-way-ts: 0.1.5
       multipasta: 0.2.5
     dev: false
 
-  /@effect/schema@0.75.3(effect@3.9.1):
-    resolution: {integrity: sha512-U+ZKRh8VLuzkYpvbn1APNRAtlNyxhqTr91NA2dR8LJ31duziAmPOnts8IF4HsbBrUCQ1LbP1IrRPW5Isw5Hj4w==}
+  /@effect/sql-drizzle@0.16.10(@effect/sql@0.18.10)(drizzle-orm@0.34.1)(effect@3.10.4):
+    resolution: {integrity: sha512-BaD7Z+0VdnR1J35Rav2ILiw4veTx7YRbhi1KyM2mXHQMhlVcRSUo6aq3qPEsdJKYZQ+SZipCn60Spwb1B/UTeA==}
     peerDependencies:
-      effect: ^3.9.1
-    dependencies:
-      effect: 3.9.1
-      fast-check: 3.22.0
-    dev: false
-
-  /@effect/sql-drizzle@0.14.2(@effect/sql@0.16.2)(drizzle-orm@0.34.1)(effect@3.9.1):
-    resolution: {integrity: sha512-FrlKsozRXa638iL0eDmACZaBIznlV7wBxWUIzV/ZKXmFqZ5gJvOsR9rSCGn54N7S9HMXofLYKBTVCu+E3Yn6mQ==}
-    peerDependencies:
-      '@effect/sql': ^0.16.2
+      '@effect/sql': ^0.18.10
       drizzle-orm: ^0.31
-      effect: ^3.9.1
+      effect: ^3.10.4
     dependencies:
-      '@effect/sql': 0.16.2(@effect/experimental@0.29.2)(@effect/platform@0.68.2)(@effect/schema@0.75.3)(effect@3.9.1)
+      '@effect/sql': 0.18.10(@effect/experimental@0.30.10)(@effect/platform@0.69.9)(effect@3.10.4)
       drizzle-orm: 0.34.1(pg@8.13.0)
-      effect: 3.9.1
+      effect: 3.10.4
     dev: false
 
-  /@effect/sql-pg@0.16.2(@effect/platform@0.68.2)(@effect/sql@0.16.2)(effect@3.9.1):
-    resolution: {integrity: sha512-nqNlmyy/RZo5w/d/Am5xSClcpVunhKerdfbcDhWuXIG46SYLi8PxEyZC60bD7aquXaqcMx99/UB7nWB/WGsvPQ==}
+  /@effect/sql-pg@0.18.10(@effect/platform@0.69.9)(@effect/sql@0.18.10)(effect@3.10.4):
+    resolution: {integrity: sha512-NzxLNBEk4m4wwGhznaSgX2FRtMkoxZkxj+/2R8V5UEt6g8RHpKs9UDMtZuig2knHw6xAYbI/lcC6VzXiwVfqoQ==}
     peerDependencies:
-      '@effect/platform': ^0.68.2
-      '@effect/sql': ^0.16.2
-      effect: ^3.9.1
+      '@effect/platform': ^0.69.9
+      '@effect/sql': ^0.18.10
+      effect: ^3.10.4
     dependencies:
-      '@effect/platform': 0.68.2(@effect/schema@0.75.3)(effect@3.9.1)
-      '@effect/sql': 0.16.2(@effect/experimental@0.29.2)(@effect/platform@0.68.2)(@effect/schema@0.75.3)(effect@3.9.1)
+      '@effect/platform': 0.69.9(effect@3.10.4)
+      '@effect/sql': 0.18.10(@effect/experimental@0.30.10)(@effect/platform@0.69.9)(effect@3.10.4)
       '@opentelemetry/semantic-conventions': 1.27.0
-      effect: 3.9.1
+      effect: 3.10.4
       postgres: 3.4.4
     dev: false
 
-  /@effect/sql@0.16.2(@effect/experimental@0.29.2)(@effect/platform@0.68.2)(@effect/schema@0.75.3)(effect@3.9.1):
-    resolution: {integrity: sha512-9PgK+rezvmPh2BnlCh5XEUe83903bM2PQsR6fcaFlk5zcsaiU9k3HYwIePrhCC57uhS1WvKqKOvR+yAdQq6hjQ==}
+  /@effect/sql@0.18.10(@effect/experimental@0.30.10)(@effect/platform@0.69.9)(effect@3.10.4):
+    resolution: {integrity: sha512-seLP8kGpEXRCsC1VZErx8TE+GC3VwF1j2+Hhq55V5u/tjeDd1nG3+/L6StfpIEaeeexkGrzY0gXk4VVS79bFcQ==}
     peerDependencies:
-      '@effect/experimental': ^0.29.2
-      '@effect/platform': ^0.68.2
-      '@effect/schema': ^0.75.3
-      effect: ^3.9.1
+      '@effect/experimental': ^0.30.10
+      '@effect/platform': ^0.69.9
+      effect: ^3.10.4
     dependencies:
-      '@effect/experimental': 0.29.2(@effect/platform-node@0.63.2)(@effect/platform@0.68.2)(@effect/schema@0.75.3)(effect@3.9.1)
-      '@effect/platform': 0.68.2(@effect/schema@0.75.3)(effect@3.9.1)
-      '@effect/schema': 0.75.3(effect@3.9.1)
+      '@effect/experimental': 0.30.10(@effect/platform-node@0.64.10)(@effect/platform@0.69.9)(effect@3.10.4)
+      '@effect/platform': 0.69.9(effect@3.10.4)
       '@opentelemetry/semantic-conventions': 1.27.0
-      effect: 3.9.1
+      effect: 3.10.4
     dev: false
 
-  /@effect/vitest@0.12.0(effect@3.9.1)(vitest@2.1.2):
-    resolution: {integrity: sha512-YPoOO+gv8zi1/I74Gzbch9mFYnB7POupMTe72oS5QFvbrDDR1fSnFh5bjBHW2wwggvJgPgEDl4LiaxzJQYhyjA==}
+  /@effect/vitest@0.13.4(effect@3.10.4)(vitest@2.1.2):
+    resolution: {integrity: sha512-TVL0KKN3JJCobZG4dRbzvrq9TGFAQZ/a8O8rfvFqIJECXQhWs0Ov5jGSjyB3hfhZtsw8UE8hL6ikNd2i6b7xsA==}
     peerDependencies:
-      effect: ^3.9.1
+      effect: ^3.10.4
       vitest: ^2.0.5
     dependencies:
-      effect: 3.9.1
+      effect: 3.10.4
       vitest: 2.1.2(@types/node@22.7.4)
     dev: true
 
@@ -4390,8 +4366,10 @@ packages:
   /ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  /effect@3.9.1:
-    resolution: {integrity: sha512-dxd+eiCqxOriBM12EQ6uIjn3cJpKIP7DfqafWTVEb45aMO157iEeDcO09SEdVSAy/OqpFlRF+4Lx7Hei1ipvOA==}
+  /effect@3.10.4:
+    resolution: {integrity: sha512-D7Mryq8jylT0fIGrgXEn2TublO/BhduRwzlqV5z1l/QFY6grs7UOyyomlAOFMK9ArSYiLgrOSMQ/Cr/cIOeU2Q==}
+    dependencies:
+      fast-check: 3.22.0
 
   /electron-to-chromium@1.5.32:
     resolution: {integrity: sha512-M+7ph0VGBQqqpTT2YrabjNKSQ2fEl9PVx6AK3N558gDH9NO8O6XN9SXXFWRo9u9PbEg/bWq+tjXQr+eXmxubCw==}
@@ -4660,7 +4638,6 @@ packages:
     engines: {node: '>=8.0.0'}
     dependencies:
       pure-rand: 6.1.0
-    dev: false
 
   /fast-fifo@1.3.2:
     resolution: {integrity: sha512-/d9sfos4yxzpwkDkuN7k2SqFKtYNmCTzgfEpz82x34IM9/zc8KGxQoXg1liNC/izpRM/MBdt44Nmx41ZWqk+FQ==}
@@ -5582,7 +5559,6 @@ packages:
 
   /pure-rand@6.1.0:
     resolution: {integrity: sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA==}
-    dev: false
 
   /qs@6.13.0:
     resolution: {integrity: sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==}

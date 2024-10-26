@@ -1,5 +1,5 @@
 import { HttpApi, HttpApiEndpoint, HttpApiGroup } from "@effect/platform";
-import { Schema } from "@effect/schema";
+import { Schema } from "effect";
 import { PaddlePrice, PaddleProduct } from "./schemas/paddle";
 
 export class ErrorWebhook extends Schema.TaggedError<ErrorWebhook>()(
@@ -24,36 +24,31 @@ export class ErrorSqlQuery extends Schema.TaggedError<ErrorSqlQuery>()(
   {}
 ) {}
 
-export class PaddleApiGroup extends HttpApiGroup.make("paddle").pipe(
-  HttpApiGroup.add(
-    HttpApiEndpoint.post("webhook", "/paddle/webhook").pipe(
-      HttpApiEndpoint.addError(ErrorWebhook),
-      HttpApiEndpoint.setSuccess(Schema.Boolean),
-      HttpApiEndpoint.setHeaders(
+export class PaddleApiGroup extends HttpApiGroup.make("paddle")
+  .add(
+    HttpApiEndpoint.post("webhook", "/paddle/webhook")
+      .addError(ErrorWebhook)
+      .addSuccess(Schema.Boolean)
+      .setHeaders(
         Schema.Struct({
           "paddle-signature": Schema.NonEmptyString,
         })
       )
-    )
-  ),
-  HttpApiGroup.add(
-    HttpApiEndpoint.get("product", "/paddle/product/:slug").pipe(
-      HttpApiEndpoint.addError(ErrorInvalidProduct),
-      HttpApiEndpoint.setSuccess(
+  )
+  .add(
+    HttpApiEndpoint.get("product", "/paddle/product/:slug")
+      .addError(ErrorInvalidProduct)
+      .addSuccess(
         Schema.Struct({
           product: PaddleProduct,
           price: PaddlePrice,
         })
-      ),
-      HttpApiEndpoint.setPath(
+      )
+      .setPath(
         Schema.Struct({
           slug: Schema.NonEmptyString,
         })
       )
-    )
-  )
-) {}
+  ) {}
 
-export class MainApi extends HttpApi.empty.pipe(
-  HttpApi.addGroup(PaddleApiGroup)
-) {}
+export class MainApi extends HttpApi.empty.add(PaddleApiGroup) {}

@@ -1,11 +1,11 @@
 import { ErrorInvalidProduct, ErrorWebhook, MainApi } from "@app/api-client";
 import { PaddlePrice, PaddleProduct } from "@app/api-client/schemas";
 import { HttpApiBuilder, HttpServerRequest } from "@effect/platform";
-import { Schema } from "@effect/schema";
 import { PgDrizzle } from "@effect/sql-drizzle/Pg";
 import { EventName } from "@paddle/paddle-node-sdk";
 import { eq } from "drizzle-orm";
-import { Array, Config, Effect, Match } from "effect";
+import { Array, Config, Effect, Layer, Match, Schema } from "effect";
+import { DatabaseLive } from "./database";
 import { Paddle } from "./paddle";
 import { priceTable, productTable } from "./schema/drizzle";
 import { slugFromName } from "./utils";
@@ -107,9 +107,9 @@ export const PaddleApiLive = HttpApiBuilder.group(
   MainApi,
   "paddle",
   (handlers) =>
-    handlers.pipe(
+    handlers
       // https://developer.paddle.com/webhooks/signature-verification#verify-sdks
-      HttpApiBuilder.handle("webhook", ({ headers }) =>
+      .handle("webhook", ({ headers }) =>
         Effect.gen(function* () {
           const request = yield* HttpServerRequest.HttpServerRequest;
           const payload = yield* request.text.pipe(
@@ -126,9 +126,8 @@ export const PaddleApiLive = HttpApiBuilder.group(
             )
           );
         })
-      ),
-      HttpApiBuilder.handle("product", ({ path: { slug } }) =>
+      )
+      .handle("product", ({ path: { slug } }) =>
         PaddleApi.pipe(Effect.flatMap((api) => api.getProduct({ slug })))
       )
-    )
-);
+).pipe(Layer.provide([PaddleApi.Default, Paddle.Default, DatabaseLive]));
