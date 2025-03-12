@@ -3,7 +3,7 @@ import { Config, Effect } from "effect";
 import { Breadcrumb, Breadcrumbs } from "~/components/Breadcrumbs";
 import { PADDLE_CONTAINER_CLASS } from "~/constants";
 import { machine } from "~/machines/paddle-machine";
-import type * as Route from "./+types.home";
+import type { Route } from "./+types/home";
 
 export async function loader() {
   return Effect.runPromise(

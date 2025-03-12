@@ -51,4 +51,4 @@ export class PaddleApiGroup extends HttpApiGroup.make("paddle")
       )
   ) {}
 
-export class MainApi extends HttpApi.empty.add(PaddleApiGroup) {}
+export class MainApi extends HttpApi.make("MainApi").add(PaddleApiGroup) {}

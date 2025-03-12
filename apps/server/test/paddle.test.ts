@@ -31,7 +31,7 @@ const HttpGroupTest = <Api extends HttpApi.HttpApi.Any, A, E, R>(
     Layer.provideMerge(
       Layer.mergeAll(
         groupLayer,
-        HttpApiBuilder.api(api as any as HttpApi.HttpApi),
+        HttpApiBuilder.api(api as any as HttpApi.HttpApi<string>),
         NodeHttpServer.layerTest
       )
     )

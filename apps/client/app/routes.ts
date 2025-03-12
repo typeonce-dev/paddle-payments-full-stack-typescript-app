@@ -1,4 +1,5 @@
-import type { RouteConfig } from "@react-router/dev/routes";
-import { route } from "@react-router/dev/routes";
+import { type RouteConfig, route } from "@react-router/dev/routes";
 
-export const routes: RouteConfig = [route("checkout/:slug", "routes/home.tsx")];
+export default [
+  route("checkout/:slug", "routes/home.tsx"),
+] satisfies RouteConfig;

@@ -2,7 +2,7 @@ import * as PgDrizzle from "@effect/sql-drizzle/Pg";
 import { PgClient } from "@effect/sql-pg";
 import { Cause, Config, Console, Layer } from "effect";
 
-const PgLive = PgClient.layer({
+const PgLive = PgClient.layerConfig({
   password: Config.redacted("POSTGRES_PW"),
   username: Config.succeed("postgres"),
   database: Config.succeed("postgres"),

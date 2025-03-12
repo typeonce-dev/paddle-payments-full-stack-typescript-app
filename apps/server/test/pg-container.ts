@@ -19,7 +19,7 @@ export class PgContainer extends Effect.Service<PgContainer>()("PgContainer", {
   static ClientLive = Layer.unwrapEffect(
     Effect.gen(function* () {
       const container = yield* PgContainer;
-      return PgClient.layer({
+      return PgClient.layerConfig({
         url: Config.succeed(Redacted.make(container.getConnectionUri())),
       });
     })
