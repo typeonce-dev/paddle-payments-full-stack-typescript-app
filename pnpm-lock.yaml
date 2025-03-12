@@ -111,9 +111,6 @@ importers:
       '@paddle/paddle-node-sdk':
         specifier: ^1.7.0
         version: 1.7.0
-      dotenv:
-        specifier: ^16.4.5
-        version: 16.4.5
       drizzle-kit:
         specifier: ^0.25.0
         version: 0.25.0
@@ -4293,11 +4290,6 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
-
-  /dotenv@16.4.5:
-    resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
-    engines: {node: '>=12'}
-    dev: false
 
   /drizzle-kit@0.25.0:
     resolution: {integrity: sha512-Rcf0nYCAKizwjWQCY+d3zytyuTbDb81NcaPor+8NebESlUz1+9W3uGl0+r9FhU4Qal5Zv9j/7neXCSCe7DHzjA==}

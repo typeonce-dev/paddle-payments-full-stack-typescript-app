@@ -16,7 +16,6 @@
     "@effect/sql-drizzle": "^0.31.1",
     "@effect/sql-pg": "^0.33.1",
     "@paddle/paddle-node-sdk": "^1.7.0",
-    "dotenv": "^16.4.5",
     "drizzle-kit": "^0.25.0",
     "drizzle-orm": "^0.34.1",
     "effect": "^3.13.10",
